@@ -3,7 +3,7 @@ package tasks
 import (
 	"fmt"
 
-	"go-ai/types"
+	"github.com/TobiasGleiter/go-ai/types"
 )
 
 func ResearchWhyTheSkyIsBlue() types.Task {

@@ -5,10 +5,10 @@ import (
 	"strings"
 
 
-	"go-ai/pkg/ollama"
-	"go-ai/pkg/agents"
-	"go-ai/pkg/tools/filesystem"
-	"go-ai/types"
+	"github.com/TobiasGleiter/go-ai/pkg/ollama"
+	"github.com/TobiasGleiter/go-ai/pkg/agents"
+	"github.com/TobiasGleiter/go-ai/pkg/tools/filesystem"
+	"github.com/TobiasGleiter/go-ai/types"
 )
 
 type Manager struct {

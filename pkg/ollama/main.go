@@ -7,8 +7,8 @@ import (
 	"strings"
 	"io"
 
-	"go-ai/pkg/agents"
-	"go-ai/types"
+	"github.com/TobiasGleiter/go-ai/pkg/agents"
+	"github.com/TobiasGleiter/go-ai/types"
 )
 
 const (

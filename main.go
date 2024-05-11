@@ -1,9 +1,9 @@
 package main
 
 import (
-	"go-ai/types"
-	"go-ai/pkg/agents"
-	"go-ai/pkg/manager"
+	"github.com/TobiasGleiter/go-ai/types"
+	"github.com/TobiasGleiter/go-ai/pkg/agents"
+	"github.com/TobiasGleiter/go-ai/pkg/manager"
 )
 
 

@@ -1,7 +1,7 @@
 package agents
 
 import (
-	"go-ai/types"
+	"github.com/TobiasGleiter/go-ai/types"
 )
 
 type Agent struct {
