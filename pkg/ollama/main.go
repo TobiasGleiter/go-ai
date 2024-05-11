@@ -51,7 +51,7 @@ func Talk(agent agents.Agent, task types.Task) string {
 	defer resp.Body.Close()
 
 	decoder := json.NewDecoder(resp.Body)
-	var response types.Llama3Response
+	var response types.OllamaResponse
 	if err := decoder.Decode(&response); err != nil {	
 		fmt.Println("error decoding response:", err)
 	}
@@ -89,7 +89,7 @@ func TalkFast(llmEndpoint string, agent agents.Agent, task types.Task) {
 	decoder := json.NewDecoder(resp.Body)
 
 	for {
-		var response types.Llama3StreamResponse
+		var response types.OllamaStreamResponse
 		if err := decoder.Decode(&response); err != nil {
 			if err == io.EOF {
 				fmt.Println(Red + "This is red text" + task.Description + Reset)
@@ -154,7 +154,7 @@ func Chat(agent agents.Agent, task types.Task, messages []types.Message) ([]type
 	defer resp.Body.Close()
 
 	decoder := json.NewDecoder(resp.Body)
-	var response types.Llama3ChatResponse
+	var response types.OllamaChatResponse
 	if err := decoder.Decode(&response); err != nil {	
 		fmt.Println("error decoding response:", err)
 	}

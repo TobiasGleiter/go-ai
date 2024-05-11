@@ -7,7 +7,7 @@ import (
 
 func CreateMarkdownFile(input string) error {
     // Create the file
-    filePath := "complete_chat" + ".md"
+    filePath := "ai_generated/complete_chat" + ".md"
     file, err := os.Create(filePath)
     if err != nil {
         return err

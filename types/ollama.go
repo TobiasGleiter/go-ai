@@ -1,6 +1,6 @@
 package types
 
-type Llama3StreamResponse struct {
+type OllamaStreamResponse struct {
 	Model     string `json:"model"`
 	CreatedAt string `json:"created_at"`
 	Response  string `json:"response"`
@@ -12,14 +12,14 @@ type Message struct {
 	Content string `json:"content"`
 }
 
-type Llama3ChatResponse struct {
+type OllamaChatResponse struct {
 	Model     string `json:"model"`
 	CreatedAt string `json:"created_at"`
 	Message  Message `json:"message"`
 	Done      bool   `json:"done"`
 }
 
-type Llama3Response struct {
+type OllamaResponse struct {
 	Model              string        `json:"model"`
 	CreatedAt          string        `json:"created_at"`
 	Response           string        `json:"response"`
