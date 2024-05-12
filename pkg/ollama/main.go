@@ -168,3 +168,41 @@ func Chat(agent agents.Agent, task types.Task, messages []types.Message) ([]type
 	fmt.Print(Green + response.Message.Content + Reset)
 	return messages, nil
 }
+
+func TalkAndForget(agent agents.Agent, task types.Task) string {
+	llmEndpoint := "http://localhost:11434/api/generate"
+	client := &http.Client{}
+
+	prompt := fmt.Sprintf("Agent description: %s; Task: %s;", agent.Role, task.Description)
+	fmt.Println("\nAgent: " + Gray + agent.Role + Reset)
+	fmt.Println("\nPrompt: " + Yellow + task.Description + Reset)
+
+	requestBody := fmt.Sprintf(`{
+		"model": "llama3:8b",
+		"prompt": "%s",
+		"keep_alive": -1,
+		"stream": false
+	}`, prompt)
+
+	req, err := http.NewRequest("POST", llmEndpoint, strings.NewReader(requestBody))
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return "Error"
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return "Error"
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+	var response types.OllamaResponse
+	if err := decoder.Decode(&response); err != nil {	
+		fmt.Println("error decoding response:", err)
+	}
+	fmt.Print(Green + response.Response + Reset)
+	return response.Response
+}
