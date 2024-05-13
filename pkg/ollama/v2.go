@@ -11,10 +11,8 @@ import (
 )
 
 func GenerateSingleStream(prompt string) {
-	llmEndpoint := "http://localhost:11434/api/generate"
-
 	client := &http.Client{}
-	fmt.Println("Prompt: " + Yellow + prompt + Reset)
+	llmEndpoint := "http://localhost:11434/api/generate"
 
 	request := types.OllamaModel{
         Model:  "llama3:8b",
@@ -27,7 +25,8 @@ func GenerateSingleStream(prompt string) {
         Stream: true,
     }
 
-    // Marshal the ModelRequest instance to JSON
+	fmt.Println("Prompt: " + Yellow + prompt + Reset)
+
     requestBody, err := json.Marshal(request)
     if err != nil {
         fmt.Println("Error marshaling request:", err)
