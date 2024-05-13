@@ -180,7 +180,6 @@ func TalkAndForget(agent agents.Agent, task types.Task) string {
 	requestBody := fmt.Sprintf(`{
 		"model": "llama3:8b",
 		"prompt": "%s",
-		"keep_alive": -1,
 		"stream": false
 	}`, prompt)
 

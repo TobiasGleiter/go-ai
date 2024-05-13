@@ -1,5 +1,17 @@
 package types
 
+type OllamaOptions struct {
+	NumCtx int `json:"num_ctx,omitempty"`
+}
+
+type OllamaModel struct {
+    Model    string `json:"model,omitempty"`
+    Prompt   string `json:"prompt,omitempty"`
+    Options  OllamaOptions
+    Stream bool `json:"stream,omitempty"`
+	Format   string   `json:"format,omitempty"`
+}
+
 type OllamaStreamResponse struct {
 	Model     string `json:"model"`
 	CreatedAt string `json:"created_at"`
