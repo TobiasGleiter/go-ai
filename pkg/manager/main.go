@@ -33,12 +33,12 @@ func removeQuotesAndSpecialChars(s string) string {
 }
 
 func (m *Manager) plan() {
-	ceoDescription := `Your are a CEO. You are talking with your CTO. Output only one sentence.`
-	ctoDescription := `Your are a CTO. You are talking with your CEO Output only one sentence.`
+	ceoDescription := `Your are a CEO. You are talking with your CTO. Output only one sentence. Lets think step by step.`
+	ctoDescription := `Your are a CTO. You are talking with your CEO Output only one sentence. Lets think step by step.`
 
 	ceo := agents.NewAgent(ceoDescription)
 	cto := agents.NewAgent(ctoDescription)
-	ceoInit := types.Task{Description: "You are talking to your CTO about a new product." }
+	ceoInit := types.Task{Description: "You are talking to your CTO about a new product. Lets think step by step." }
 	//ctoRequestMessage := types.Task{Description: "Talk to your CTO about a new product. Only one sentence." }
 
 	// ceoMessage := ollama.Talk(ceo, ceoInit)
