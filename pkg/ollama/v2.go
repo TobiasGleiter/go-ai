@@ -17,15 +17,13 @@ func GenerateSingleStream(prompt string) {
 	request := types.OllamaModel{
         Model:  "llama3:8b",
         Prompt: prompt,
-        Options: struct {
-            NumCtx int `json:"num_ctx,omitempty"`
-        }{
+        Options: types.OllamaOptions{
             NumCtx: 4096,
         },
         Stream: true,
     }
 
-	fmt.Println("Prompt: " + Yellow + prompt + Reset)
+	fmt.Println("\nPrompt: " + Yellow + prompt + Reset)
 
     requestBody, err := json.Marshal(request)
     if err != nil {
@@ -67,4 +65,51 @@ func GenerateSingleStream(prompt string) {
 
 		fmt.Print(Green + response.Response + Reset)
 	}
+}
+
+
+func Generate(prompt string) string {
+	client := &http.Client{}
+	llmEndpoint := "http://localhost:11434/api/generate"
+	
+	request := types.OllamaModel{
+        Model:  "llama3:8b",
+        Prompt: prompt,
+		Options: types.OllamaOptions{
+            NumCtx: 4096,
+        },
+        Stream: false,
+    }
+
+	fmt.Println("\nPrompt: " + Yellow + prompt + Reset)
+
+    requestBody, err := json.Marshal(request)
+    if err != nil {
+        fmt.Println("Error marshaling request:", err)
+        return "error"
+    }
+
+	req, err := http.NewRequest("POST", llmEndpoint, bytes.NewReader(requestBody))
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return "Error"
+	}
+	req.Header.Add("Content-Type", "application/json")
+		
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return "Error"
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+	var response types.OllamaResponse
+	if err := decoder.Decode(&response); err != nil {	
+		fmt.Println("error decoding response:", err)
+	}
+
+	fmt.Print(Green + response.Response + Reset)
+	return response.Response
 }

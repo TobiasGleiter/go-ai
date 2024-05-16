@@ -5,10 +5,10 @@ type OllamaOptions struct {
 }
 
 type OllamaModel struct {
-    Model    string `json:"model,omitempty"`
-    Prompt   string `json:"prompt,omitempty"`
+    Model    string `json:"model"`
+    Prompt   string `json:"prompt"`
     Options  OllamaOptions
-    Stream bool `json:"stream,omitempty"`
+    Stream bool `json:"stream"`
 	Format   string   `json:"format,omitempty"`
 }
 
