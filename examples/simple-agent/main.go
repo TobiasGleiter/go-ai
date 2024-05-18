@@ -5,6 +5,7 @@ import (
 	"strings"
 	"log"
 	"os"
+	"time"
 
 	"github.com/TobiasGleiter/go-ai/pkg/ollama"
 )
@@ -33,7 +34,7 @@ func main() {
 	project manager Mark, database engineer Sabrina
 	`
 	// PLAN -> memory
-	plan01 := ollama.Generate(init + task + " Create a high-level step by step plan what to do. Output a only a numbered list.")
+	plan01 := ollama.Generate(init + task + " Create a high-level plan that you know as senior backend-developer what to do. Output only a numbered list.")
 	memory = append(memory, plan01)
 	//plan02 := ollama.Generate(plan01 + " Refine this plan and make it realy precise. Output a list in this format: Todo: Review and Planning, Tasks: 1. Review the project require...")
 	data := ollama.GenerateJson(plan01 + ` Format this well structured plan. Output json: 
@@ -57,14 +58,17 @@ func main() {
 	memoryString := ""
 	for _, task := range tasks.Tasks {
 		// get memory-stream
-		memoryString = strings.Join(memory, " ")
+		memoryString = strings.Join(memory, "\n")
 		// execute tasks step by step.
-		genTask := ollama.Generate(memoryString + task.Description + " Output only necessary information")
+
+		genTask := ollama.Generate(task.Description + "\n Decide what to do. Either create a code snippet, talk to project manager Mark, database engineer Sabrina or reflect what you did.")
+		//genTask := ollama.Generate(memoryString + task.Description + "\n Output neccessary information.")
 		// store information in the memory-stream
 		memory = append(memory, genTask)
 	}
 
-	err = writeToFile("README.md", memoryString)
+	currentTime := time.Now()
+	err = writeToFile("README" + currentTime.String() + ".md", memoryString)
 	if err != nil {
 		log.Fatalf("Error writing to file: %s", err)
 	}

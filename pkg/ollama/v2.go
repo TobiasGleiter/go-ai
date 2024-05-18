@@ -3,6 +3,7 @@ package ollama
 import (
 	"net/http"
 	"fmt"
+	"strings"
 	"encoding/json"
 	"bytes"
 	"io"
@@ -81,54 +82,7 @@ func Generate(prompt string) string {
         Stream: false,
     }
 
-	fmt.Println("\nPrompt: " + Yellow + prompt + Reset)
-
-    requestBody, err := json.Marshal(request)
-    if err != nil {
-        fmt.Println("Error marshaling request:", err)
-        return "error"
-    }
-
-	req, err := http.NewRequest("POST", llmEndpoint, bytes.NewReader(requestBody))
-	if err != nil {
-		fmt.Println("create request failed:", err)
-		return "Error"
-	}
-	req.Header.Add("Content-Type", "application/json")
-		
-
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("create request failed:", err)
-		return "Error"
-	}
-	defer resp.Body.Close()
-
-	decoder := json.NewDecoder(resp.Body)
-	var response types.OllamaResponse
-	if err := decoder.Decode(&response); err != nil {	
-		fmt.Println("error decoding response:", err)
-	}
-
-	fmt.Print(Green + response.Response + Reset)
-	return response.Response
-}
-
-func GenerateJson(prompt string) string {
-	client := &http.Client{}
-	llmEndpoint := "http://localhost:11434/api/generate"
-	
-	request := types.OllamaModel{
-        Model:  "llama3:8b",
-        Prompt: prompt,
-		Options: types.OllamaOptions{
-            NumCtx: 4096,
-        },
-		Format: "json",
-        Stream: false,
-    }
-
-	lastWords := lastNWords(prompt, 50)
+	lastWords := lastNWords(prompt, 200)
 	fmt.Println("\nPrompt: " + Yellow + lastWords + Reset)
 
     requestBody, err := json.Marshal(request)
@@ -158,10 +112,102 @@ func GenerateJson(prompt string) string {
 		fmt.Println("error decoding response:", err)
 	}
 
-	lastWords = lastNWords(response.Response, 50)
+	lastWords = lastNWords(response.Response, 400)
 	fmt.Print(Green + lastWords + Reset)
 	return response.Response
 }
+
+func GenerateJson(prompt string) string {
+	client := &http.Client{}
+	llmEndpoint := "http://localhost:11434/api/generate"
+	
+	request := types.OllamaModel{
+        Model:  "llama3:8b",
+        Prompt: prompt,
+		Options: types.OllamaOptions{
+            NumCtx: 4096,
+        },
+		Format: "json",
+        Stream: false,
+    }
+
+	lastWords := lastNWords(prompt, 200)
+	fmt.Println("\nPrompt: " + Yellow + lastWords + Reset)
+
+    requestBody, err := json.Marshal(request)
+    if err != nil {
+        fmt.Println("Error marshaling request:", err)
+        return "error"
+    }
+
+	req, err := http.NewRequest("POST", llmEndpoint, bytes.NewReader(requestBody))
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return "Error"
+	}
+	req.Header.Add("Content-Type", "application/json")
+		
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return "Error"
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+	var response types.OllamaResponse
+	if err := decoder.Decode(&response); err != nil {	
+		fmt.Println("error decoding response:", err)
+	}
+
+	lastWords = lastNWords(response.Response, 400)
+	fmt.Print(Green + lastWords + Reset)
+	return response.Response
+}
+
+func GenerateEmbeddings(prompt string) types.OllamaEmbedding {
+	client := &http.Client{}
+	llmEndpoint := "http://localhost:11434/api/embeddings"
+	
+	request := types.OllamaModel{
+		Model:   "llama3:8b",
+		Prompt:  prompt,
+		Options: types.OllamaOptions{NumCtx: 4096},
+		Stream:  false,
+	}
+
+	requestBody, err := json.Marshal(request)
+	if err != nil {
+		fmt.Println("Error marshaling request:", err)
+		return types.OllamaEmbedding{} // Return an empty value or handle the error accordingly
+	}
+
+	req, err := http.NewRequest("POST", llmEndpoint, bytes.NewReader(requestBody))
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return types.OllamaEmbedding{} // Return an empty value or handle the error accordingly
+	}
+	req.Header.Add("Content-Type", "application/json")
+		
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return types.OllamaEmbedding{} // Return an empty value or handle the error accordingly
+	}
+	defer resp.Body.Close()
+
+	var embedding types.OllamaEmbedding // Assuming types.OllamaEmbedding is the correct type for embedding
+	err = json.NewDecoder(resp.Body).Decode(&embedding)
+	if err != nil {
+		fmt.Println("Error parsing JSON:", err)
+		return types.OllamaEmbedding{} // Return an empty value or handle the error accordingly
+	}
+
+	fmt.Print(Green + fmt.Sprintf("%v", embedding.Embedding) + Reset) // Assuming embedding.Embedding is of type []float64
+	return embedding
+}
+
 
 func lastNWords(s string, n int) string {
 	words := strings.Fields(s) // Split the string into words

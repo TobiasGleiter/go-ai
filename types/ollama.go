@@ -44,3 +44,7 @@ type OllamaResponse struct {
 	EvalCount          int           `json:"eval_count"`
 	EvalDuration       int64         `json:"eval_duration"`
 }
+
+type OllamaEmbedding struct {
+	Embedding []float64 `json:"embedding"`
+}
