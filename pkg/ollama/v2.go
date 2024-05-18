@@ -113,3 +113,60 @@ func Generate(prompt string) string {
 	fmt.Print(Green + response.Response + Reset)
 	return response.Response
 }
+
+func GenerateJson(prompt string) string {
+	client := &http.Client{}
+	llmEndpoint := "http://localhost:11434/api/generate"
+	
+	request := types.OllamaModel{
+        Model:  "llama3:8b",
+        Prompt: prompt,
+		Options: types.OllamaOptions{
+            NumCtx: 4096,
+        },
+		Format: "json",
+        Stream: false,
+    }
+
+	lastWords := lastNWords(prompt, 50)
+	fmt.Println("\nPrompt: " + Yellow + lastWords + Reset)
+
+    requestBody, err := json.Marshal(request)
+    if err != nil {
+        fmt.Println("Error marshaling request:", err)
+        return "error"
+    }
+
+	req, err := http.NewRequest("POST", llmEndpoint, bytes.NewReader(requestBody))
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return "Error"
+	}
+	req.Header.Add("Content-Type", "application/json")
+		
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("create request failed:", err)
+		return "Error"
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+	var response types.OllamaResponse
+	if err := decoder.Decode(&response); err != nil {	
+		fmt.Println("error decoding response:", err)
+	}
+
+	lastWords = lastNWords(response.Response, 50)
+	fmt.Print(Green + lastWords + Reset)
+	return response.Response
+}
+
+func lastNWords(s string, n int) string {
+	words := strings.Fields(s) // Split the string into words
+	if len(words) > n {
+		words = words[len(words)-n:] // Take the last n words
+	}
+	return strings.Join(words, " ") // Join the words back into a string
+}
