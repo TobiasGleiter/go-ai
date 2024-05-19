@@ -18,28 +18,27 @@ func main() {
 
 	todo := `	
 	Current Todo:
-	Write a Go function that:
-	* Handles incoming HTTP requests.
-	* Connects to the MongoDB database using Sabrina's setup.
-	* Executes the query defined in step 5.
-	* Serializes the result into JSON format.
-	* Returns the JSON response.`
+	Decide on a suitable endpoint URL (e.g., "/articles") and HTTP method (e.g., GET). 
+	Determine the expected response format (JSON) and any necessary authentication or authorization mechanisms.`
 
 
 	// --- INTELLIGENCE ----
-	intelligence01 := " Recognize the problem and the need to make a decision."
-	intelligence02 := " What are the most important decision you need to make? Output a numbered list."
-
-	// Memory, co-workers, tools (probably a vector databse?)
-	intelligence03 := " Gather information about the problem situation. Output a numbered list."
-	intelligence04 := intelligence03 + agents + " Define which agent can help you. For example: 1. Mark can help define requirement."
-
-	intel01 := ollama.Generate(agent01 + todo + intelligence01)
-	intel02 := ollama.Generate(agent01 + todo + intel01 + intelligence02)
-	intel03 := ollama.Generate(agent01 + todo + intel02 + intelligence03)
-	res := ollama.Generate(agent01 + todo + intel03 + intelligence04)
+	intelligence01 := " Recognize the problem and the need to make a decision. Only return high-level steps."
+	highLevelPlan := ollama.Generate(agent01 + todo + intelligence01)
+	filesystem.CreateMarkdownFile(highLevelPlan, "highLevelPlan.md")
 	
-	filesystem.CreateMarkdownFile(res, "intelligence_steps.md")
+	// TODO: Gather information from the memory or a vector database about the task.
+	// private todo list:
+	// What are my tasks?
+	intelligence03 := " Define tasks that You need to do to solve this. Output a numbered list."
+	privateTodos := ollama.Generate(agent01 + todo + highLevelPlan + intelligence03)
+	filesystem.CreateMarkdownFile(privateTodos, "private_todo.md")
+	
+	// public todo list:
+	intelligence04 := " Define which agent can help You. For example: 1. Mark can help define requirement. Output a numbered list of the agents and the request."
+	publicTodos := ollama.Generate(agent01 + todo + highLevelPlan + agents + intelligence04)
+	filesystem.CreateMarkdownFile(publicTodos, "public_todo.md")
+	
 	
 	// --- DESIGN ---
 	// complex and continuous task, often being partly iterative,
@@ -48,7 +47,7 @@ func main() {
 	design02 := " Establish specific criteria. Output a bullet list."
 	design03 := " Identify a range of alternatives aimed at resolving the issue at hand. Output a numbered list."
 	// 
-	res01 := ollama.Generate(agent01 + todo + res + design01)
+	res01 := ollama.Generate(agent01 + todo + privateTodos + design01)
 	res02 := ollama.Generate(agent01 + res01 + design02)
 	res03 := ollama.Generate(agent01 + res01 + res02 + design03)
 	filesystem.CreateMarkdownFile(res03, "design.md")
